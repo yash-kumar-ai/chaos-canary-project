@@ -1,0 +1,18 @@
+#need of service is to make sure browser never talks to pods directly which can break the deployment so service make a layer that stays between the browser and pods
+apiVersion: v1
+kind : Service
+
+metadata:
+  name: chaos-canary-service
+
+spec:
+
+  selector:
+    app: chaos-canary
+
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+
+  type: NodePort
