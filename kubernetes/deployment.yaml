@@ -29,3 +29,23 @@ spec:
 
         ports:
         - containerPort: 8000
+
+        # readiness probe 
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          intialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+
+        LivenessProbe:
+          httpGet: 
+            path: /health
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
