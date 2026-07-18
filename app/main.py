@@ -25,5 +25,5 @@ def version():
 @app.get("/health")
 def health():
     return {
-        "status": "healthyy"
+        "status": "healthy"
     }
