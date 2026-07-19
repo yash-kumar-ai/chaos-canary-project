@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import socket
+import os
 
 app = FastAPI(
     title="Chaos Canary Deployer",
@@ -9,18 +10,24 @@ app = FastAPI(
 
 HOSTNAME = socket.gethostname()
 
+APP_NAME =os.getenv("APP_NAME", "Chaos Canary API")
+APP_VERSION = os.getenv("APP_VERSION", "v1")
+ENVIRONMENT = os.getenv("ENVIRONMENT", "Development")
+
 @app.get("/")
 def home():
     return {
-        "message": "Welcome to Chaos Canary API",
-        "version": "v1",
-        "hostname": "HOSTNAME"
+        "application": APP_NAME,
+        "version": APP_VERSION,
+        "environment": ENVIRONMENT,
+        "hostname": HOSTNAME
     }
 @app.get("/version")
 def version():
     return {
-        "version": "v1",
-        "hostname": "HOSTNAME"
+        "application": APP_NAME,
+        "version": APP_VERSION,
+        "hostname": HOSTNAME
     }
 @app.get("/health")
 def health():

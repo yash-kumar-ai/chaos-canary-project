@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata: 
+  name: chaos-canary-config 
+
+data: 
+  APP_NAME: "Chaos Canary"
+  APP_VERSION: "v1"
+  ENVIRONMENT: "Development"

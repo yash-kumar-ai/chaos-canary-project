@@ -26,6 +26,23 @@ spec:
         image: chaos-canary:v1
 # we are using local image so there is no need to pull image from docker hub 
         imagePullPolicy: Never
+        env: 
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: chaos-canary-config 
+              key: APP_NAME
+
+        -name: APP_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: chaos-canary-config
+              key: APP_VERSION
+        - name: ENVIRONMENT
+          valueFrom: 
+            configMapKeyRef:
+              name: chaos-canary-config
+              key: ENVIRONMENT          
 
         ports:
         - containerPort: 8000
@@ -35,13 +52,13 @@ spec:
           httpGet:
             path: /health
             port: 8000
-          intialDelaySeconds: 5
+          initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 2
           successThreshold: 1
           failureThreshold: 3
-
-        LivenessProbe:
+        # Liveness Probe 
+        livenessProbe:
           httpGet: 
             path: /health
             port: 8000
