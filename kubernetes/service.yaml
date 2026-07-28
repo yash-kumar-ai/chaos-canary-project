@@ -1,5 +1,5 @@
-#need of service is to make sure browser never talks to pods directly which can break the deployment so service make a layer that stays between the browser and pods
-apiVersion: v1
+# A service provides a stable endpoint for clients .
+# it load-balances traffic to healthy pods so clients never communicate with pods directly.
 kind : Service
 
 metadata:
