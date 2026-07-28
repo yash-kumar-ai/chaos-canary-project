@@ -6,7 +6,7 @@ metadata:
   name: chaos-canary-v2
 
 spec:
-# should always keep 2 pods alive for backup 
+# should always keep 2 pods alive for backup but for canary release we are currently using 1 replica  
   replicas: 1
 
   selector:

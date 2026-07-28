@@ -18,6 +18,7 @@ spec:
 # tells server to look for pods named chaos-canary kinda like hashtags 
       labels:
         app: chaos-canary
+        version: v1
 
     spec:
       containers:
