@@ -1,9 +1,10 @@
 apiVersion: v1
+# Tells kubernetes that we are creating a configmap object
 kind: ConfigMap
-
+# similar like every deployment have a name, configmap also has a name 
 metadata: 
   name: chaos-canary-config 
-
+# actual configuration
 data: 
   APP_NAME: "Chaos Canary"
   APP_VERSION: "v1"
