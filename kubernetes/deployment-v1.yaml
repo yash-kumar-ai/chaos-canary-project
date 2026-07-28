@@ -34,7 +34,7 @@ spec:
               name: chaos-canary-config 
               key: APP_NAME
 
-        -name: APP_VERSION
+        - name: APP_VERSION
           valueFrom:
             configMapKeyRef:
               name: chaos-canary-config
