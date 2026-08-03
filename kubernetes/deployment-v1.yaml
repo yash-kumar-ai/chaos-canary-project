@@ -31,18 +31,18 @@ spec:
         - name: APP_NAME
           valueFrom:
             configMapKeyRef:
-              name: chaos-canary-config 
+              name: chaos-canary-config-v1 
               key: APP_NAME
 
         - name: APP_VERSION
           valueFrom:
             configMapKeyRef:
-              name: chaos-canary-config
+              name: chaos-canary-config-v1
               key: APP_VERSION
         - name: ENVIRONMENT
           valueFrom: 
             configMapKeyRef:
-              name: chaos-canary-config
+              name: chaos-canary-config-v1
               key: ENVIRONMENT          
 
         ports:

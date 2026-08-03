@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 # similar like every deployment have a name, configmap also has a name 
 metadata: 
-  name: chaos-canary-config 
+  name: chaos-canary-config-v1 
 # actual configuration
 data: 
   APP_NAME: "Chaos Canary"
