@@ -1,5 +1,6 @@
 # A service provides a stable endpoint for clients .
 # it load-balances traffic to healthy pods so clients never communicate with pods directly.
+apiVersion: v1
 kind : Service
 
 metadata:
