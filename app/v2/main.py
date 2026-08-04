@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 import socket
 import os
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+from fastapi.responses import Response
 
 app = FastAPI(
     title="Chaos Canary Deployer",
@@ -14,8 +16,15 @@ APP_NAME =os.getenv("APP_NAME", "Chaos Canary API")
 APP_VERSION = os.getenv("APP_VERSION", "v2")
 ENVIRONMENT = os.getenv("ENVIRONMENT", "Development")
 
+REQUEST_COUNT = Counter(
+    "http_requests_total",
+    "Total number of HTTP requests receieved"
+)
+
 @app.get("/")
 def home():
+    REQUEST_COUNT.inc()
+    
     return {
         "application": APP_NAME,
         "version": APP_VERSION,
