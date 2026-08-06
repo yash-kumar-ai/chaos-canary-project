@@ -43,3 +43,9 @@ def health():
     return {
         "status": "healthy"
     }
+@app.get("/metrics")
+def metrics():
+    return Response(
+        content=generate_latest(),
+        media_type=CONTENT_TYPE_LATEST
+    )
