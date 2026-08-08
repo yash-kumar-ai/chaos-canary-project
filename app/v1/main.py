@@ -40,24 +40,42 @@ REQUEST_LATENCY = Histogram(
 )
 @app.get("/")
 def home():
-    REQUEST_COUNTER.inc()
+    REQUEST_COUNTER.labels(
+        method="GET",
+        endpoint="/",
+        status="200",
+        version=APP_VERSION
+    ).inc()
+
+    SUCCESS_COUNTER.labels(
+        method="GET",
+        endpoints="/",
+        status="200",
+        version=APP_VERSION
+    ).inc()
 
     with REQUEST_LATENCY.time():
-        SUCCESS_COUNTER.inc()
-
         return {
             "application": APP_NAME,
             "version": APP_VERSION,
-            "environment": ENVIRONMENT,
-            "hostname": HOSTNAME
+            "environment": HOSTNAME
         }
+
 @app.get("/fail")
 def fail():
-    REQUEST_COUNTER.inc()
-
+    REQUEST_COUNTER.labels(
+        method="GET",
+        endpoint="/fail",
+        status="500",
+        version=APP_VERSION
+    ).inc()
+    ERROR_COUNTER.labels(
+        method="GET",
+        endpoints="/fail",
+        status="500",
+        version=APP_VERSION
+    ).INC()
     with REQUEST_LATENCY.time():
-        ERROR_COUNTER.inc()
-
         raise HTTPException(
             status_code=500,
             detail="Simulated application failure"
