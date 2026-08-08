@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import socket
 import os
-from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import Counter,Histogram, generate_latest, CONTENT_TYPE_LATEST
 from fastapi.responses import Response
 from fastapi import HTTPException, status
 
@@ -31,28 +31,34 @@ ERROR_COUNTER = Counter(
     "http_requests_error_total",
     "Failed HTTP requests"
 )
-
-
+REQUEST_LATENCY = Histogram(
+    "http_request_duration_seconds",
+    "HTTP request duration in seconds"
+)
 @app.get("/")
 def home():
     REQUEST_COUNTER.inc()
-    SUCCESS_COUNTER.inc()
 
-    return {
-        "application": APP_NAME,
-        "version": APP_VERSION,
-        "environment": ENVIRONMENT,
-        "hostname": HOSTNAME
-    }
+    with REQUEST_LATENCY.time():
+        SUCCESS_COUNTER.inc()
+
+        return {
+            "application": APP_NAME,
+            "version": APP_VERSION,
+            "environment": ENVIRONMENT,
+            "hostname": HOSTNAME
+        }
 @app.get("/fail")
 def fail():
     REQUEST_COUNTER.inc()
-    ERROR_COUNTER.inc()
-    
-    raise HTTPException(
-        status_code=500,
-        detail="Simulated application failure"
-    )   
+
+    with REQUEST_LATENCY.time():
+        ERROR_COUNTER.inc()
+
+        raise HTTPException(
+            status_code=500,
+            detail="Simulated application failure"
+        )   
 @app.get("/version")
 def version():
     return {
