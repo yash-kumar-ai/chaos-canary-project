@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 import socket
+import time 
 import os
-from prometheus_client import Counter,Histogram , generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import (Counter,Histogram , generate_latest, CONTENT_TYPE_LATEST)
 from fastapi.responses import Response
 from fastapi import HTTPException, status
 
@@ -25,61 +26,35 @@ REQUEST_COUNTER = Counter(
 
 SUCCESS_COUNTER = Counter(
     "http_requests_success_total",
-    "successful HTTP requests"
+    "Successful HTTP requests",
     ["method", "endpoint", "status", "version"]
 )
 
 ERROR_COUNTER = Counter(
     "http_requests_error_total",
-    "Failed HTTP requests"
+    "Failed HTTP requests",
     ["method", "endpoint", "status", "version"]
 )
+
 REQUEST_LATENCY = Histogram(
     "http_request_duration_seconds",
-    "HTTP request duration in seconds"
+    "HTTP request duration in seconds",
+    ["method", "endpoint", "version"]
 )
 @app.get("/")
 def home():
-    REQUEST_COUNTER.labels(
-        method="GET",
-        endpoint="/",
-        status="200",
-        version=APP_VERSION
-    ).inc()
-
-    SUCCESS_COUNTER.labels(
-        method="GET",
-        endpoints="/",
-        status="200",
-        version=APP_VERSION
-    ).inc()
-
-    with REQUEST_LATENCY.time():
-        return {
-            "application": APP_NAME,
-            "version": APP_VERSION,
-            "environment": HOSTNAME
-        }
-
+    return {
+        "application": APP_NAME,
+        "version": APP_VERSION,
+        "environment": ENVIRONMENT,
+        "hostname": HOSTNAME
+    }
 @app.get("/fail")
 def fail():
-    REQUEST_COUNTER.labels(
-        method="GET",
-        endpoint="/fail",
-        status="500",
-        version=APP_VERSION
-    ).inc()
-    ERROR_COUNTER.labels(
-        method="GET",
-        endpoints="/fail",
-        status="500",
-        version=APP_VERSION
-    ).INC()
-    with REQUEST_LATENCY.time():
-        raise HTTPException(
-            status_code=500,
-            detail="Simulated application failure"
-        )   
+    raise HTTPException(
+        status_code=500,
+        detail="Simulated application failure"
+    )   
 @app.get("/version")
 def version():
     return {
@@ -92,6 +67,56 @@ def health():
     return {
         "status": "healthy"
     }
+@app.middleware("http")
+async def prometheus_middleware(request, call_next):
+
+    # Don't count Prometheus scraping itself
+    if request.url.path == "/metrics":
+        return await call_next(request)
+
+    # Don't count Kubernetes health checks as application traffic
+    if request.url.path == "/health":
+        return await call_next(request)
+
+    start_time = time.perf_counter()
+
+    response = await call_next(request)
+
+    duration = time.perf_counter() - start_time
+
+    method = request.method
+    endpoint = request.url.path
+    status = str(response.status_code)
+
+    REQUEST_COUNTER.labels(
+        method=method,
+        endpoint=endpoint,
+        status=status,
+        version=APP_VERSION
+    ).inc()
+
+    REQUEST_LATENCY.labels(
+        method=method,
+        endpoint=endpoint,
+        version=APP_VERSION
+    ).observe(duration)
+
+    if response.status_code >= 400:
+        ERROR_COUNTER.labels(
+            method=method,
+            endpoint=endpoint,
+            status=status,
+            version=APP_VERSION
+        ).inc()
+    else:
+        SUCCESS_COUNTER.labels(
+            method=method,
+            endpoint=endpoint,
+            status=status,
+            version=APP_VERSION
+        ).inc()
+
+    return response
 @app.get("/metrics")
 def metrics():
     return Response(
