@@ -24,7 +24,7 @@ spec:
       containers:
       - name: chaos-canary
         # use our docker image 
-        image: chaos-canary:dev
+        image: chaos-canary:3
 # we are using local image so there is no need to pull image from docker hub 
         imagePullPolicy: Never
         env: 
