@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import socket
 import os
-from prometheus_client import Counter,Histogram, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import Counter,Histogram , generate_latest, CONTENT_TYPE_LATEST
 from fastapi.responses import Response
 from fastapi import HTTPException, status
 
@@ -19,17 +19,20 @@ ENVIRONMENT = os.getenv("ENVIRONMENT", "Development")
 
 REQUEST_COUNTER = Counter(
     "http_requests_total",
-    "Total HTTP requests"
+    "Total HTTP requests",
+    ["method", "endpoint", "status", "version"]
 )
 
 SUCCESS_COUNTER = Counter(
     "http_requests_success_total",
     "successful HTTP requests"
+    ["method", "endpoint", "status", "version"]
 )
 
 ERROR_COUNTER = Counter(
     "http_requests_error_total",
     "Failed HTTP requests"
+    ["method", "endpoint", "status", "version"]
 )
 REQUEST_LATENCY = Histogram(
     "http_request_duration_seconds",
