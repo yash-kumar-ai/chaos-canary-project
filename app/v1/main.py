@@ -50,11 +50,9 @@ def fail():
     ERROR_COUNTER.inc()
     
     raise HTTPException(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        status_code=500,
         detail="Simulated application failure"
-        
-    )
-    
+    )   
 @app.get("/version")
 def version():
     return {
