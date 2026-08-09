@@ -1,0 +1,89 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+
+metadata:
+  name: chaos-canary
+
+spec:
+
+  replicas: 2
+
+  revisionHistoryLimit: 3
+
+  selector:
+    matchLabels:
+      app: chaos-canary
+
+  template:
+
+    metadata:
+      labels:
+        app: chaos-canary
+
+    spec:
+
+      containers:
+
+        - name: chaos-canary
+
+          image: chaos-canary:dev
+
+          imagePullPolicy: Never
+
+          ports:
+            - containerPort: 8000
+
+          env:
+
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: chaos-canary-config-v1
+                  key: APP_NAME
+
+            - name: APP_VERSION
+              value: "v1"
+
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: chaos-canary-config-v1
+                  key: ENVIRONMENT
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+  strategy:
+
+    canary:
+
+      stableService: chaos-canary-stable-service
+
+      canaryService: chaos-canary-canary-service
+
+      steps:
+
+        - setWeight: 10
+
+        - pause:
+            duration: 30s
+
+        - setWeight: 50
+
+        - pause:
+            duration: 30s
+
+        - setWeight: 100
