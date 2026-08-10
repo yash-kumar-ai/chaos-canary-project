@@ -24,3 +24,6 @@ Thumbs.db
 
 # Minikube temp files
 *.tmp
+
+kubectl-argo-rollouts.exe
+*.exe
