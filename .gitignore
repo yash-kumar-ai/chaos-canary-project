@@ -26,5 +26,6 @@ Thumbs.db
 # Minikube temp files
 *.tmp
 
+# Argo Rollouts CLI
 kubectl-argo-rollouts.exe
 *.exe
