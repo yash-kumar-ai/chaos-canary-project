@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+
+metadata:
+  name: chaos-canary-error-rate
+
+spec:
+  metrics:
+
+    - name: v2-error-rate
+
+      interval: 30s
+
+      failureLimit: 1
+
+      successCondition: result[0] < 5
+
+      provider:
+        prometheus:
+
+          address: http://prometheus-server.default.svc.cluster.local:9090
+
+          query: |
+            (
+              sum(rate(http_requests_error_total{version="v2"}[2m]))
+              /
+              sum(rate(http_requests_total{version="v2"}[2m]))
+            ) * 100
