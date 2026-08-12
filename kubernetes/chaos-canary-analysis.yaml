@@ -17,6 +17,7 @@ spec:
 
       provider:
         prometheus:
+
           address: http://prometheus-1785961021-server.monitoring.svc.cluster.local:80
 
           query: |
@@ -25,4 +26,3 @@ spec:
               /
               sum(rate(http_requests_total{version="v2"}[2m]))
             ) * 100
-            
