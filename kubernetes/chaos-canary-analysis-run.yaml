@@ -5,5 +5,5 @@ metadata:
   name: chaos-canary-error-rate-test
 
 spec:
-  AnalysisTemplate:
+  analysisTemplate:
     name: chaos-canary-error-rate
