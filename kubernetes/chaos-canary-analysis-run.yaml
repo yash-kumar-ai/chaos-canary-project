@@ -1,0 +1,9 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisRun
+
+metadata:
+  name: chaos-canary-error-rate-test
+
+spec:
+  AnalysisTemplate:
+    name: chaos-canary-error-rate
