@@ -6,23 +6,18 @@ metadata:
 
 spec:
   metrics:
-
     - name: v2-error-rate
-
       interval: 30s
-
       failureLimit: 1
-
       successCondition: result[0] < 5
 
       provider:
         prometheus:
-
           address: http://prometheus-1785961021-server.monitoring.svc.cluster.local:80
 
           query: |
             (
-              sum(rate(http_requests_error_total{version="v2"}[2m]))
+              sum(increase(http_requests_error_total{version="v2"}[5m]))
               /
-              sum(rate(http_requests_total{version="v2"}[2m]))
+              sum(increase(http_requests_total{version="v2"}[5m]))
             ) * 100
