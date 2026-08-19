@@ -71,12 +71,12 @@ spec:
 
         - setWeight: 20
 
-        - pause:
-            duration: 30s
+        - pause: {}
+            #duration: 30s
 
         - setWeight: 40
 
-        - pause:
-            duration: 30s
+        - pause: {}
+            #duration: 30s
 
         - setWeight: 100
